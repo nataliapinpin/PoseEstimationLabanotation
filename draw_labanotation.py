@@ -11,11 +11,11 @@ import pickle
 import os, sys
 from datetime import datetime
 from math import ceil
-import labanotation_data
+import labanotation_score
 
 PATH = "./labanotation_symbols/"
 BEAT = 28.35
-COL = {"right_support": 165, "left_support": 159.15, "right_leg": 180.5, "left_leg": 143.65,
+COL = {"right_support": 165, "left_support": 159.15, "support": 162.75, "right_leg": 180.5, "left_leg": 143.65,
        "right_body": None, "left_body": None, "right_arm": 193.25, "left_arm": 130.9}
 
 
@@ -30,10 +30,11 @@ def prep_staff(canvas):
 def draw_symbol(lnd, canvas):
     print(lnd)
     try:
+        b = 170-BEAT + lnd.get_beat() * BEAT if lnd.get_beat() != 0 else 140.25
         renderPDF.draw(svg2rlg(PATH + f"{lnd.get_symbol()}.svg"),
                        canvas,
                        COL[lnd.get_column()],
-                       170-BEAT + lnd.get_beat() * BEAT)
+                       b)
     except:
         pass
 

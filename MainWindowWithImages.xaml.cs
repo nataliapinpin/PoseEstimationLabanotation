@@ -25,6 +25,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     using Microsoft.Kinect;
     using System.Timers;
     using Newtonsoft.Json;
+    ///using System.Drawing;
     using System.Windows.Controls;
 
     /// <summary>
@@ -32,7 +33,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        /// <summary>Brushes
+        /// <summary>
         /// Radius of drawn hand circles
         /// </summary>
         private const double HandSize = 30;
@@ -55,32 +56,32 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <summary>
         /// System.Windows.Media.Brush used for drawing hands that are currently tracked as closed
         /// </summary>
-        private readonly Brush handClosedBrush = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0));
+        private readonly System.Windows.Media.Brush handClosedBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(128, 255, 0, 0));
 
         /// <summary>
         /// Brush used for drawing hands that are currently tracked as opened
         /// </summary>
-        private readonly Brush handOpenBrush = new SolidColorBrush(Color.FromArgb(128, 0, 255, 0));
+        private readonly System.Windows.Media.Brush handOpenBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(128, 0, 255, 0));
 
         /// <summary>
         /// Brush used for drawing hands that are currently tracked as in lasso (pointer) position
         /// </summary>
-        private readonly Brush handLassoBrush = new SolidColorBrush(Color.FromArgb(128, 0, 0, 255));
+        private readonly System.Windows.Media.Brush handLassoBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(128, 0, 0, 255));
 
         /// <summary>
         /// Brush used for drawing joints that are currently tracked
         /// </summary>
-        private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+        private readonly System.Windows.Media.Brush trackedJointBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 68, 192, 68));
 
         /// <summary>
         /// Brush used for drawing joints that are currently inferred
         /// </summary>        
-        private readonly Brush inferredJointBrush = Brushes.Yellow;
+        private readonly System.Windows.Media.Brush inferredJointBrush = System.Windows.Media.Brushes.Yellow;
 
         /// <summary>
         /// Pen used for drawing bones that are currently inferred
         /// </summary>        
-        private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
+        private readonly System.Windows.Media.Pen inferredBonePen = new System.Windows.Media.Pen(System.Windows.Media.Brushes.Gray, 1);
 
         /// <summary>
         /// Drawing group for body rendering output
@@ -132,7 +133,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <summary>
         /// List of colors for each body tracked
         /// </summary>
-        private List<Pen> bodyColors;
+        private List<System.Windows.Media.Pen> bodyColors;
 
         /// <summary>
         /// Current status text to display
@@ -140,6 +141,19 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private string statusText = null;
 
         // Initialize variable to save jpg
+        private string timestamp;
+        byte[] colorData;
+        BitmapSource bmpSource;
+        static private string imgPath = "C:\\Users\\natal\\Documents\\HonorsThesis\\PoseEstimationLabanotation\\images\\" + DateTime.Now.ToString("yyyyMMddHHmmssffff") + "\\";
+        private int prevCount;
+        private int time;
+        private int count;
+
+        // Variables to save Json data
+        private List<JsonData> jsonJointData = new List<JsonData>();
+        private bool start = false;
+        private string jsonPath = "C:\\Users\\natal\\Documents\\HonorsThesis\\PoseEstimationLabanotation\\joints.json";
+
 
         // Structure of json data for joints
         /*
@@ -182,15 +196,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         }
 
         // Create json file for 3d joint data
-        static Timer _timer;
-        static int count = 0;
-        static bool start = false;
-        static private List<JsonData> jsonJointData = new List<JsonData>();
-        static private IReadOnlyDictionary<JointType, Joint> currentJoints = null;
-        static private string jsonPath = "C:\\Users\\natal\\Documents\\HonorsThesis\\PoseEstimationLabanotation\\joints.json";
+        //static Timer _timer;
+        //static int count = 0;
+        //static bool start = false;
+        //static private List<JsonData> jsonJointData = new List<JsonData>();
+        //static private IReadOnlyDictionary<JointType, Joint> currentJoints = null;
 
-
-        static private void WriteJointsToJson(IReadOnlyDictionary<JointType, Joint> joints)
+        private void WriteJointsToJson(IReadOnlyDictionary<JointType, Joint> joints)
         {
             float[] JointList(JointType jointType)
             {
@@ -226,12 +238,12 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             jsonJointData.Add(data);
         }
-        
+        /*
         static void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             count += 1;
 
-            if (count == 16)
+            if (count == 8)
             {
                 start = true;
             }
@@ -241,7 +253,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 WriteJointsToJson(currentJoints);
             }
         }
-        
+        */
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -303,14 +315,14 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
 
             // populate body colors, one for each BodyIndex
-            this.bodyColors = new List<Pen>();
+            this.bodyColors = new List<System.Windows.Media.Pen>();
 
-            this.bodyColors.Add(new Pen(Brushes.Red, 6));
-            ///this.bodyColors.Add(new Pen(Brushes.Orange, 6));
-            ///this.bodyColors.Add(new Pen(Brushes.Green, 6));
-            ///this.bodyColors.Add(new Pen(Brushes.Blue, 6));
-            ///this.bodyColors.Add(new Pen(Brushes.Indigo, 6));
-            ///this.bodyColors.Add(new Pen(Brushes.Violet, 6));
+            this.bodyColors.Add(new System.Windows.Media.Pen(System.Windows.Media.Brushes.Red, 6));
+            ///this.bodyColors.Add(new System.Windows.Media.Pen(System.Windows.Media.Brushes.Orange, 6));
+            ///this.bodyColors.Add(new System.Windows.Media.Pen(System.Windows.Media.Brushes.Green, 6));
+            ///this.bodyColors.Add(new System.Windows.Media.Pen(System.Windows.Media.Brushes.Blue, 6));
+            ///this.bodyColors.Add(new System.Windows.Media.Pen(System.Windows.Media.Brushes.Indigo, 6));
+            ///this.bodyColors.Add(new System.Windows.Media.Pen(System.Windows.Media.Brushes.Violet, 6));
 
             // set IsAvailableChanged event notifier
             this.kinectSensor.IsAvailableChanged += this.Sensor_IsAvailableChanged;
@@ -337,6 +349,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // create the bitmap to display
             this.colorBitmap = new WriteableBitmap(colorFrameDescription.Width, colorFrameDescription.Height, 96.0, 96.0, PixelFormats.Bgr32, null);
 
+            /*
             // timer variables
             var timer = new Timer(1000);
             // To add the elapsed event handler:
@@ -344,6 +357,17 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             timer.Elapsed += new ElapsedEventHandler(_timer_Elapsed);
             timer.Enabled = true;
             _timer = timer;
+            */
+            this.time = Int32.Parse(DateTime.Now.ToString("sff"));
+            this.count = 0;
+
+            // Initialize values for saving images to jpg
+            var fd = this.kinectSensor.ColorFrameSource.CreateFrameDescription(ColorImageFormat.Bgra);
+            uint frameSize = fd.BytesPerPixel * fd.LengthInPixels;
+            this.colorData = new byte[frameSize];
+            Directory.CreateDirectory(imgPath + "joints\\");
+            Directory.CreateDirectory(imgPath + "color\\");
+            this.prevCount = -1;
 
             // initialize the components (controls) of the window
             this.InitializeComponent();
@@ -439,6 +463,29 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
         }
 
+        // https://stackoverflow.com/questions/31010067/how-to-save-kinect-color-video-as-stream-on-hard-disk-by-kinect-sdk-2-in-wpf
+        private void SaveColorFrame(ColorFrame colorFrame)
+        {
+            colorFrame.CopyConvertedFrameDataToArray(colorData, ColorImageFormat.Bgra);
+            var fd = colorFrame.FrameDescription;
+
+            // Creating BitmapSource
+            var bytesPerPixel = (PixelFormats.Bgr32.BitsPerPixel) / 8;
+            var stride = bytesPerPixel * colorFrame.FrameDescription.Width;
+
+            bmpSource = BitmapSource.Create(fd.Width, fd.Height, 96.0, 96.0, PixelFormats.Bgr32, null, colorData, stride);
+
+            // JpegBitmapEncoder to save BitmapSource to file
+            // imageSerial is the serial of the sequential image
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmpSource));
+            timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+            string filename = imgPath + "color\\" + timestamp + ".jpeg";
+            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                encoder.Save(fs);
+            }
+        }
 
         private void Reader_ColorFrameArrived(object sender, ColorFrameArrivedEventArgs e)
         {
@@ -465,11 +512,31 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
                         this.colorBitmap.Unlock();
                     }
+
+                    SaveColorFrame(colorFrame);
                     
                 }
             }
         }
 
+        private void SaveJointFrame(DrawingGroup drawingGroup)
+        {
+            DrawingImage dImageSource = new DrawingImage(drawingGroup);
+            System.Windows.Controls.Image myImage = new Image();
+            myImage.Source = dImageSource;
+            myImage.Arrange(new Rect(0, 0, 1920, 1080));
+
+            RenderTargetBitmap rtb = new RenderTargetBitmap(1920, 1080, 96, 96, System.Windows.Media.PixelFormats.Default);
+            rtb.Render(myImage);
+            JpegBitmapEncoder myEncoder = new JpegBitmapEncoder();
+            myEncoder.Frames.Add(BitmapFrame.Create(rtb));
+            timestamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+            string filename = imgPath + "joints\\" + timestamp + ".jpeg";
+            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                myEncoder.Save(fs);
+            }
+        }
 
         /// <summary>
         /// Handles the body frame data arriving from the sensor
@@ -499,23 +566,39 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             if (dataReceived)
             {
+                IReadOnlyDictionary<JointType, Joint> joints = null;
+                var currentTime = Int32.Parse(DateTime.Now.ToString("sff"));
+                if (currentTime < this.time)
+                {
+                    currentTime += 6000;
+                }
+                if (currentTime - this.time > 100)
+                {
+                    Debug.WriteLine(currentTime);
+                    this.count += 1;
+                    this.time += 100 % 6000;
+                    if (this.count == 8)
+                    {
+                        start = true;
+                    }
+                }
+
                 using (DrawingContext dc = this.drawingGroup.Open())
                 {
                     // Draw a transparent background to set the render size
-                    dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+                    dc.DrawRectangle(System.Windows.Media.Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                     dc.DrawImage(this.colorBitmap, new Rect(0, 0, this.displayWidth, this.displayHeight));
 
                     int penIndex = 0;
                     foreach (Body body in this.bodies)
                     {
-                        Pen drawPen = this.bodyColors[0];
+                        System.Windows.Media.Pen drawPen = this.bodyColors[0];
 
                         if (body.IsTracked)
                         {
                             this.DrawClippedEdges(body, dc);
 
-                            IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-                            currentJoints = joints;
+                            joints = body.Joints;
 
                             // convert the joint points to depth (display) space
                             Dictionary<JointType, System.Windows.Point> jointPoints = new Dictionary<JointType, System.Windows.Point>();
@@ -549,13 +632,23 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         FlowDirection.LeftToRight,
                         new Typeface("Arial"),
                         start ? 200 : 600,
-                        Brushes.White
+                        System.Windows.Media.Brushes.White
                     );
                     dc.DrawText(ft, start ? new System.Windows.Point(60, 30) : new System.Windows.Point(800, 200));
 
                     // prevent drawing outside of our render area
                     this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
 
+                }
+
+                if (this.prevCount < this.count)
+                {
+                    this.prevCount = count;
+                    if (this.start)
+                    {
+                        WriteJointsToJson(joints);
+                        SaveJointFrame(this.drawingGroup);
+                    }
                 }
             }
         }
@@ -567,7 +660,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <param name="jointPoints">translated positions of joints to draw</param>
         /// <param name="drawingContext">drawing context to draw to</param>
         /// <param name="drawingPen">specifies color to draw a specific body</param>
-        private void DrawBody(IReadOnlyDictionary<JointType, Joint> joints, IDictionary<JointType, System.Windows.Point> jointPoints, DrawingContext drawingContext, Pen drawingPen)
+        private void DrawBody(IReadOnlyDictionary<JointType, Joint> joints, IDictionary<JointType, System.Windows.Point> jointPoints, DrawingContext drawingContext, System.Windows.Media.Pen drawingPen)
         {
             // Draw the bones
             foreach (var bone in this.bones)
@@ -578,7 +671,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // Draw the joints
             foreach (JointType jointType in joints.Keys)
             {
-                Brush drawBrush = null;
+                System.Windows.Media.Brush drawBrush = null;
                 
                 TrackingState trackingState = joints[jointType].TrackingState;
 
@@ -607,7 +700,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <param name="jointType1">second joint of bone to draw</param>
         /// <param name="drawingContext">drawing context to draw to</param>
         /// /// <param name="drawingPen">specifies color to draw a specific bone</param>
-        private void DrawBone(IReadOnlyDictionary<JointType, Joint> joints, IDictionary<JointType, System.Windows.Point> jointPoints, JointType jointType0, JointType jointType1, DrawingContext drawingContext, Pen drawingPen)
+        private void DrawBone(IReadOnlyDictionary<JointType, Joint> joints, IDictionary<JointType, System.Windows.Point> jointPoints, JointType jointType0, JointType jointType1, DrawingContext drawingContext, System.Windows.Media.Pen drawingPen)
         {
             Joint joint0 = joints[jointType0];
             Joint joint1 = joints[jointType1];
@@ -620,7 +713,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
 
             // We assume all drawn bones are inferred unless BOTH joints are tracked
-            Pen drawPen = this.inferredBonePen;
+            System.Windows.Media.Pen drawPen = this.inferredBonePen;
             if ((joint0.TrackingState == TrackingState.Tracked) && (joint1.TrackingState == TrackingState.Tracked))
             {
                 drawPen = drawingPen;
@@ -665,7 +758,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             if (clippedEdges.HasFlag(FrameEdges.Bottom))
             {
                 drawingContext.DrawRectangle(
-                    Brushes.Red,
+                    System.Windows.Media.Brushes.Red,
                     null,
                     new Rect(0, this.displayHeight - ClipBoundsThickness, this.displayWidth, ClipBoundsThickness));
             }
@@ -673,7 +766,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             if (clippedEdges.HasFlag(FrameEdges.Top))
             {
                 drawingContext.DrawRectangle(
-                    Brushes.Red,
+                    System.Windows.Media.Brushes.Red,
                     null,
                     new Rect(0, 0, this.displayWidth, ClipBoundsThickness));
             }
@@ -681,7 +774,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             if (clippedEdges.HasFlag(FrameEdges.Left))
             {
                 drawingContext.DrawRectangle(
-                    Brushes.Red,
+                    System.Windows.Media.Brushes.Red,
                     null,
                     new Rect(0, 0, ClipBoundsThickness, this.displayHeight));
             }
@@ -689,7 +782,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             if (clippedEdges.HasFlag(FrameEdges.Right))
             {
                 drawingContext.DrawRectangle(
-                    Brushes.Red,
+                    System.Windows.Media.Brushes.Red,
                     null,
                     new Rect(this.displayWidth - ClipBoundsThickness, 0, ClipBoundsThickness, this.displayHeight));
             }
