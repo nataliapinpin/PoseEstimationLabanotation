@@ -1,1 +1,7 @@
-# PoseEstimationLabanotation
+# The Applications of Computer Vision in Movement Analysis and Dance Notation (2021)
+
+View written thesis here: https://github.com/nataliapinpin/PoseEstimationLabanotation/blob/main/thesis_fall_2021.pdf
+
+## Abstract
+Due to the lack of funding, little research has been performed in the intersection of dance and
+computer science. With the advancement of technological capabilities in artificial intelligence and computer vision, 3D human pose estimation is becoming an increasingly feasible and accurate mode of analyzing movement. This thesis examines the applications of 3D pose estimation through the lens of dance-like movement and Labanotation. Using the Microsoft Kinect to perform 3D pose estimation, I wrote a computer program that generates a Labanotation score from a video of someone dancing a simple phrase of movement. The program utilizes the 3D coordinates predicted by the Kinect that represent the location of human joints, and it analyzes the relationships between the arm and the leg joints to write Labanotation symbols. The final Labanotation score is then written to a PDF. By testing the program on nine distinct combinations of movement, I discovered that the program can in fact perform elementary Labanotation analysis at a reasonably accurate level. However, recurring challenges emerged, such as with temporal inaccuracies, self-occlusions of body parts, and locomotion, demonstrating that much more progress in the field of 3D pose estimation remains to be achieved. This paper highlights the potentials in using technology as a means to innovate in the dance community and in using movement and dance research as a way to inform the learning of computers.
